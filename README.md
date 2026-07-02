@@ -1,5 +1,10 @@
 # leakit
 
+[![PyPI](https://img.shields.io/pypi/v/leakit.svg)](https://pypi.org/project/leakit/)
+[![Python](https://img.shields.io/pypi/pyversions/leakit.svg)](https://pypi.org/project/leakit/)
+[![CI](https://github.com/victormaricato/leakit/actions/workflows/ci.yml/badge.svg)](https://github.com/victormaricato/leakit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Continuation-free membership inference for closed language models.**
 
 `leakit` tells you whether a document was likely in a model's training set using
