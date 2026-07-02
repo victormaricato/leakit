@@ -1,0 +1,27 @@
+name: publish
+
+# Publishes to PyPI on a GitHub Release (or a v* tag) via trusted publishing.
+# One-time setup on PyPI: add a trusted publisher for this repo
+# (owner: victormaricato, repo: leakit, workflow: publish.yml, environment: pypi).
+# No API token is stored anywhere.
+
+on:
+  release:
+    types: [published]
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # required for trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build sdist and wheel
+        run: uv build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
