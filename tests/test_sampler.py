@@ -18,7 +18,9 @@ def test_chat_collects_all_samples(fake_client):
 
 
 def test_completion_mode(fake_client):
-    s = _sampler(fake_client(default=["foo bar"]), n_samples=8, mode="completion", concurrency=2)
+    s = _sampler(
+        fake_client(default=["foo bar"]), n_samples=8, mode="completion", concurrency=2
+    )
     out = s.sample("prefix")
     assert len(out) == 8
     assert out[0] == "foo bar"

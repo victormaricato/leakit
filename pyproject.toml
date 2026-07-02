@@ -26,8 +26,13 @@ Repository = "https://github.com/victormaricato/leakit"
 [project.scripts]
 leakit = "leakit.cli:main"
 
-[project.optional-dependencies]
-dev = ["pytest>=7"]
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-xdist>=3.5.0",
+    "pytest-cov>=7.1.0",
+    "ruff",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -40,5 +45,24 @@ packages = ["src/leakit"]
 include = ["src/leakit", "tests", "README.md", "LICENSE", "install.sh", "pyproject.toml"]
 
 [tool.ruff]
-line-length = 100
+line-length = 88
+indent-width = 4
 target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E402"]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: run integration tests"]
+addopts = "-p no:warnings -m 'not integration'"
+
+[tool.coverage.run]
+source = ["leakit"]

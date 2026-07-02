@@ -13,11 +13,17 @@ import pytest
 
 from leakit import LeakIt
 
+pytestmark = pytest.mark.integration
+
 # Members: identical continuations (model concentrates on memorised text).
 # Novel: four distinct continuations rotated across requests (diffuse distribution).
 MEMBER_CONTINUATIONS = ["in Hardin County Kentucky"]
-NOVEL_CONTINUATIONS = ["a winding road ahead", "thoughts about nothing much",
-                       "quux frobnicate widget", "the seventeenth of never"]
+NOVEL_CONTINUATIONS = [
+    "a winding road ahead",
+    "thoughts about nothing much",
+    "quux frobnicate widget",
+    "the seventeenth of never",
+]
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -41,21 +47,36 @@ class _Handler(BaseHTTPRequestHandler):
             prompt = body["messages"][-1]["content"]
             pool = MEMBER_CONTINUATIONS if "MEMBER" in prompt else NOVEL_CONTINUATIONS
             texts = self._emit(pool, n)
-            choices = [{"index": i, "message": {"role": "assistant",
-                        "content": t}, "finish_reason": "stop"}
-                       for i, t in enumerate(texts)]
+            choices = [
+                {
+                    "index": i,
+                    "message": {"role": "assistant", "content": t},
+                    "finish_reason": "stop",
+                }
+                for i, t in enumerate(texts)
+            ]
         else:  # /completions
             prompt = body.get("prompt", "")
             pool = MEMBER_CONTINUATIONS if "MEMBER" in prompt else NOVEL_CONTINUATIONS
             texts = self._emit(pool, n)
-            choices = [{"index": i, "text": t, "finish_reason": "stop"}
-                       for i, t in enumerate(texts)]
+            choices = [
+                {"index": i, "text": t, "finish_reason": "stop"}
+                for i, t in enumerate(texts)
+            ]
 
-        payload = json.dumps({
-            "id": "cmpl-test", "object": "chat.completion", "model": body.get("model", "m"),
-            "choices": choices,
-            "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
-        }).encode()
+        payload = json.dumps(
+            {
+                "id": "cmpl-test",
+                "object": "chat.completion",
+                "model": body.get("model", "m"),
+                "choices": choices,
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 1,
+                    "total_tokens": 2,
+                },
+            }
+        ).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(payload)))
@@ -66,6 +87,7 @@ class _Handler(BaseHTTPRequestHandler):
 @pytest.fixture
 def local_openai_server():
     import threading as _t
+
     server = HTTPServer(("127.0.0.1", 0), _Handler)
     server._cursor = 0
     server._lock = _t.Lock()
@@ -77,26 +99,47 @@ def local_openai_server():
 
 
 def test_live_http_chat_mode_member_vs_novel(local_openai_server):
-    scorer = LeakIt(model="local-test", base_url=local_openai_server, api_key="test-key",
-                    n_samples=8, concurrency=4, mode="chat")
-    member = scorer.score("MEMBER: the sixteenth president was born", document_id="member")
+    scorer = LeakIt(
+        model="local-test",
+        base_url=local_openai_server,
+        api_key="test-key",
+        n_samples=8,
+        concurrency=4,
+        mode="chat",
+    )
+    member = scorer.score(
+        "MEMBER: the sixteenth president was born", document_id="member"
+    )
     novel = scorer.score("NOVEL: my grocery list for tuesday", document_id="novel")
     assert member.n_returned == 8
     assert novel.n_returned == 8
-    assert member.score == 1.0          # identical continuations -> full concentration
+    assert member.score == 1.0  # identical continuations -> full concentration
     assert member.score > novel.score
 
 
 def test_live_http_completion_mode(local_openai_server):
-    scorer = LeakIt(model="local-test", base_url=local_openai_server, api_key="test-key",
-                    n_samples=4, concurrency=2, mode="completion")
+    scorer = LeakIt(
+        model="local-test",
+        base_url=local_openai_server,
+        api_key="test-key",
+        n_samples=4,
+        concurrency=2,
+        mode="completion",
+    )
     res = scorer.score("MEMBER prefix", document_id="m")
     assert res.n_returned == 4
     assert res.score == 1.0
 
 
 def test_live_http_n_per_request_batch(local_openai_server):
-    scorer = LeakIt(model="local-test", base_url=local_openai_server, api_key="test-key",
-                    n_samples=12, n_per_request=4, concurrency=3, mode="chat")
+    scorer = LeakIt(
+        model="local-test",
+        base_url=local_openai_server,
+        api_key="test-key",
+        n_samples=12,
+        n_per_request=4,
+        concurrency=3,
+        mode="chat",
+    )
     res = scorer.score("MEMBER prefix", document_id="m")
     assert res.n_returned == 12

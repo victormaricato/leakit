@@ -152,4 +152,6 @@ def _is_retryable(exc: Exception) -> bool:
     if status is not None:
         return status == 429 or status >= 500
     name = type(exc).__name__.lower()
-    return any(tok in name for tok in ("timeout", "connection", "ratelimit", "apierror"))
+    return any(
+        tok in name for tok in ("timeout", "connection", "ratelimit", "apierror")
+    )

@@ -38,11 +38,19 @@ def test_empty_strings_do_not_crash():
 
 
 def test_member_scores_above_nonmember():
-    member = ["born in 1809 in Hardin County", "born in 1809 in Hardin County, Kentucky",
-              "born in 1809 in Hardin"]
-    nonmember = ["the weather today is", "I think that maybe", "purple monkey dishwasher"]
-    assert (_stats.self_concentration_word_jaccard(member)
-            > _stats.self_concentration_word_jaccard(nonmember))
+    member = [
+        "born in 1809 in Hardin County",
+        "born in 1809 in Hardin County, Kentucky",
+        "born in 1809 in Hardin",
+    ]
+    nonmember = [
+        "the weather today is",
+        "I think that maybe",
+        "purple monkey dishwasher",
+    ]
+    assert _stats.self_concentration_word_jaccard(
+        member
+    ) > _stats.self_concentration_word_jaccard(nonmember)
 
 
 def test_dispatch_unknown_raises():

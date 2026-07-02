@@ -9,15 +9,14 @@ import pytest
 def _chat_response(texts):
     return types.SimpleNamespace(
         choices=[
-            types.SimpleNamespace(message=types.SimpleNamespace(content=t)) for t in texts
+            types.SimpleNamespace(message=types.SimpleNamespace(content=t))
+            for t in texts
         ]
     )
 
 
 def _completion_response(texts):
-    return types.SimpleNamespace(
-        choices=[types.SimpleNamespace(text=t) for t in texts]
-    )
+    return types.SimpleNamespace(choices=[types.SimpleNamespace(text=t) for t in texts])
 
 
 class FakeAPIError(Exception):
@@ -43,7 +42,9 @@ class FakeClient:
         self.calls = 0
         self._offset = 0
         self._lock = threading.Lock()
-        self.chat = types.SimpleNamespace(completions=types.SimpleNamespace(create=self._chat))
+        self.chat = types.SimpleNamespace(
+            completions=types.SimpleNamespace(create=self._chat)
+        )
         self.completions = types.SimpleNamespace(create=self._completion)
 
     def _pick(self, prompt):

@@ -109,6 +109,22 @@ self_concentration_word_jaccard(["a b c", "a b c", "x y z"])
 own or are authorised to assess. The self-concentration signal is a statistical
 indicator, not proof of membership; calibrate before drawing conclusions.
 
+## Development
+
+Uses [uv](https://docs.astral.sh/uv/). Lint with Ruff, test with pytest.
+
+```bash
+uv sync                       # install deps into .venv from uv.lock
+uv run ruff check             # lint
+uv run ruff format            # format
+uv run pytest                 # unit tests (integration excluded by default)
+uv run pytest -m integration  # hermetic HTTP integration tests
+```
+
+CI (GitHub Actions) runs lint and the full test matrix (Python 3.9 / 3.11 /
+3.13) on every push and PR. Releases publish to PyPI via trusted publishing on a
+`v*` tag or a published GitHub Release.
+
 ## License
 
 MIT.

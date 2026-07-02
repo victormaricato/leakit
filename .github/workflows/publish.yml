@@ -1,9 +1,12 @@
 name: publish
 
-# Publishes to PyPI on a GitHub Release (or a v* tag) via trusted publishing.
-# One-time setup on PyPI: add a trusted publisher for this repo
-# (owner: victormaricato, repo: leakit, workflow: publish.yml, environment: pypi).
-# No API token is stored anywhere.
+# Publishes to PyPI when a GitHub Release is published (or a v* tag is pushed),
+# but only after lint and tests pass. Uses PyPI trusted publishing (OIDC) --
+# no API token is stored. One-time PyPI setup: add a trusted publisher for
+# owner victormaricato, repo leakit, workflow publish.yml, environment pypi.
+#
+# Release procedure: bump `version` in pyproject.toml, then either publish a
+# GitHub Release or push a matching v* tag (e.g. git tag v0.2.0 && git push --tags).
 
 on:
   release:
@@ -12,15 +15,40 @@ on:
     tags: ["v*"]
 
 jobs:
-  build-and-publish:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/lint
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/test
+        with:
+          python-version: ${{ matrix.python-version }}
+
+  publish:
+    name: publish
+    needs: [lint, test]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write  # required for trusted publishing (OIDC)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
       - name: Build sdist and wheel
         run: uv build
       - name: Publish to PyPI

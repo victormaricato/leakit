@@ -58,7 +58,9 @@ STATISTICS = {
 }
 
 
-def compute(completions: list[str], statistic: str = "word-jaccard", k: int = 5) -> float:
+def compute(
+    completions: list[str], statistic: str = "word-jaccard", k: int = 5
+) -> float:
     """Dispatch to the named statistic. Raises ValueError on unknown names."""
     try:
         fn = STATISTICS[statistic]
