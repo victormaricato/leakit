@@ -1,0 +1,44 @@
+[project]
+name = "leakit"
+version = "0.1.0"
+description = "Continuation-free membership inference on closed language models via sample self-concentration"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Victor Maricato" }]
+keywords = ["membership-inference", "privacy", "llm", "security", "mia", "audit"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "openai>=1.40",
+]
+
+[project.urls]
+Homepage = "https://github.com/victormaricato/leakit"
+Repository = "https://github.com/victormaricato/leakit"
+
+[project.scripts]
+leakit = "leakit.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/leakit"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/leakit", "tests", "README.md", "LICENSE", "install.sh", "pyproject.toml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
