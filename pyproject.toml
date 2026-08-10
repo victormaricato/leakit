@@ -1,12 +1,12 @@
 [project]
 name = "leakit"
-version = "0.2.0"
-description = "Continuation-free membership inference on closed language models via sample self-concentration"
+version = "0.2.1"
+description = "Black-box training-data extraction auditing for language models"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "Victor Maricato" }]
-keywords = ["membership-inference", "privacy", "llm", "security", "mia", "audit"]
+keywords = ["training-data-extraction", "privacy", "llm", "security", "pii", "audit", "membership-inference"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
